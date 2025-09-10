@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="برنامج إدارة الصيدليات, برنامج محاسبة, إدارة المخزون, مبيعات الصيدليات">
+    <meta name="description" content="برنامج الصافي لإدارة الصيدليات يوفر حلولاً متكاملة لإدارة المبيعات، المخزون، العملاء، والموظفين بسهولة وكفاءة.">
+    <title>برنامج إدارة الصيدليات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <a href="/" class="logo" title="الصافي">
+                    <img src="./assets/images/daftra.png" alt="الصافي">
+                </a>
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="https://api.whatsapp.com/send?phone=962795840327"><i class="fab fa-whatsapp"></i>واتساب</a></li>
+                        <li><a href="tel:+01223126694"><i class="fas fa-phone"></i>اتصل بنا</a></li>
+                        <li><a href="/clients"><i class="fas fa-users"></i>عملائنا</a></li>
+                        <li><a href="/about"><i class="fas fa-info-circle"></i>من نحن</a></li>
+                        <li><a href="/demo"><i class="fas fa-play"></i>تجريبية</a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-boxes"></i>البرامج <i class="fas fa-caret-down"></i></a>
+                            <ul class="submenu">
+                                <li><a href="#" data-modal="featuresModal"><i class="fas fa-star"></i>المميزات</a></li>
+                                <li><a href="/erp"><i class="fas fa-cogs"></i>برنامج الصافي ERP</a></li>
+                                <li><a href="/pharmacy"><i class="fas fa-prescription-bottle"></i>إدارة الصيدليات</a></li>
+                                <li><a href="#" data-modal="inventoryModal"><i class="fas fa-warehouse"></i>إدارة المخزون</a></li>
+                                <li><a href="#" data-modal="reportsModal"><i class="fas fa-chart-bar"></i>التقارير</a></li>
+                                <li><a href="/sales"><i class="fas fa-shopping-cart"></i>إدارة المبيعات</a></li>
+                                <li><a href="/customers"><i class="fas fa-users"></i>إدارة العملاء</a></li>
+                                <li><a href="/appointments"><i class="fas fa-calendar-alt"></i>المواعيد</a></li>
+                                <li><a href="/billing"><i class="fas fa-file-invoice"></i>الفواتير</a></li>
+                                <li><a href="/accounting"><i class="fas fa-calculator"></i>المحاسبة</a></li>
+                                <li><a href="#" data-modal="staffModal"><i class="fas fa-user-tie"></i>إدارة الموظفين</a></li>
+                                <li><a href="/pos"><i class="fas fa-cash-register"></i>نقطة البيع</a></li>
+                                <li><a href="/suppliers"><i class="fas fa-truck"></i>الموردين</a></li>
+                                <li><a href="/prescriptions"><i class="fas fa-file-medical"></i>الوصفات الطبية</a></li>
+                                <li><a href="/insurance"><i class="fas fa-shield-alt"></i>شركات التأمين</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/register" class="btn btn-primary"><i class="fas fa-user-plus" style="color: aliceblue;"></i><span style="color: aliceblue;">إنشاء حساب مجاني</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>برنامج إدارة الصيدليات</h1>
+                <p>الصافي يوفر حلولاً متكاملة لإدارة الصيدليات بسهولة وكفاءة، مع دعم كامل للغة العربية، لتتبع المبيعات، المخزون، والعملاء بأحدث التقنيات.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary" data-modal="tourModal">
+                        <i class="fas fa-eye"></i><span>جولة سريعة</span>
+                    </a>
+                    <a href="/register" class="btn btn-secondary">
+                        <i class="fas fa-user-plus"></i><span>إنشاء حساب مجاني</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-inverse">
+            <div class="container">
+                <div class="text-center">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' fill='%23e3f2fd'/><circle cx='100' cy='100' r='80' fill='%23007bff'/><path d='M70 100 h60 M100 70 v60' stroke='white' stroke-width='8'/></svg>" alt="إدارة الصيدلية" style="max-width: 300px; height: auto;">
+                </div>
+                <h2>أدر حسابات الصيدلية بالكامل</h2>
+                <div class="crud-buttons">
+                    <button class="btn btn-crud btn-add" data-crud="add" data-type="pharmacy">
+                        <i class="fas fa-plus"></i><span>إضافة حساب</span>
+                    </button>
+                    <button class="btn btn-crud btn-view" data-crud="view" data-type="pharmacy">
+                        <i class="fas fa-eye"></i><span>عرض الحسابات</span>
+                    </button>
+                    <button class="btn btn-crud btn-edit" data-crud="edit" data-type="pharmacy">
+                        <i class="fas fa-edit"></i><span>تعديل</span>
+                    </button>
+                    <button class="btn btn-crud btn-delete" data-crud="delete" data-type="pharmacy">
+                        <i class="fas fa-trash"></i><span>حذف</span>
+                    </button>
+                </div>
+                <ul class="li-items">
+                    <li><i class="fas fa-check-circle"></i>إدارة حسابات الصيدلية وتتبع مبيعات الأدوية وحساب الأرباح بدقة عالية مع تقارير مفصلة</li>
+                    <li><i class="fas fa-check-circle"></i>إصدار فواتير البيع والشراء للأدوية والمستلزمات وخدمات التمريض مع دعم الباركود</li>
+                    <li><i class="fas fa-check-circle"></i>تسجيل الدخل والمصاريف وحساب صافي الأرباح لكل فترة زمنية مع تحليلات متقدمة</li>
+                    <li><i class="fas fa-check-circle"></i>ربط النظام بأجهزة نقاط البيع والطابعات الحرارية</li>
+                </ul>
+                <div class="text-center">
+                    <a class="btn btn-primary" href="#" data-modal="tourModal">
+                        <i class="fas fa-eye"></i><span>جولة سريعة</span>
+                    </a>
+                    <a class="btn btn-secondary" href="/register">
+                        <i class="fas fa-user-plus"></i><span>إنشاء حساب مجاني!</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- إبدأ إستخدام البرنامج الآن Section -->
+        <section class="cta section">
+            <div class="container">
+                <h3>ابدأ استخدام البرنامج الآن</h3>
+                <a href="/register" class="btn btn-large">
+                    <i class="fas fa-rocket"></i><span>إنشاء حساب مجاني!</span>
+                </a>
+                <p>يمكنك إلغاء الحساب في أي وقت. تجربة مجانية لمدة 30 يوماً</p>
+            </div>
+        </section>
+
+        <!-- أدر العملاء وحدد المواعيد والإجراءات Section -->
+        <section class="section">
+            <div class="container">
+                <div class="display-table">
+                    <div class="table-cell">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><rect width='300' height='300' fill='%23f8f9fa'/><circle cx='150' cy='120' r='40' fill='%23007bff'/><path d='M150 170 C120 170 100 190 100 220 L200 220 C200 190 180 170 150 170' fill='%23007bff'/><rect x='120' y='240' width='60' height='40' fill='%2328a745'/></svg>" alt="إدارة العملاء">
+                    </div>
+                    <div class="table-cell">
+                        <h2>أدر العملاء وحدد المواعيد والإجراءات</h2>
+                        <div class="crud-buttons">
+                            <button class="btn btn-crud btn-add" data-crud="add" data-type="customer">
+                                <i class="fas fa-user-plus"></i><span>إضافة عميل</span>
+                            </button>
+                            <button class="btn btn-crud btn-view" data-crud="view" data-type="customer">
+                                <i class="fas fa-users"></i><span>عرض العملاء</span>
+                            </button>
+                            <button class="btn btn-crud btn-edit" data-crud="edit" data-type="customer">
+                                <i class="fas fa-user-edit"></i><span>تعديل بيانات</span>
+                            </button>
+                            <button class="btn btn-crud btn-delete" data-crud="delete" data-type="customer">
+                                <i class="fas fa-user-times"></i><span>حذف عميل</span>
+                            </button>
+                        </div>
+                        <ul class="li-items">
+                            <li><i class="fas fa-check-circle"></i>إنشاء سجل شامل لكل عميل يتضمن البيانات الشخصية (اسم، عنوان، رقم جوال، تاريخ الميلاد)</li>
+                            <li><i class="fas fa-check-circle"></i>تنظيم مواعيد الزيارات وخدمات التمريض المنزلية بنظام تذكيرات ذكي</li>
+                            <li><i class="fas fa-check-circle"></i>إرفاق المستندات والوصفات الطبية ومشاركتها عبر البريد الإلكتروني والواتساب</li>
+                            <li><i class="fas fa-check-circle"></i>تتبع تاريخ الأدوية المشتراة والجرعات الموصوفة لكل مريض</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- تابع أداء الصيادلة وموظفي المحل Section -->
+        <section class="section section-inverse">
+            <div class="container">
+                <div class="display-table">
+                    <div class="table-cell">
+                        <h2>تابع أداء الصيادلة وموظفي المحل</h2>
+                        <div class="crud-buttons">
+                            <button class="btn btn-crud btn-add" data-crud="add" data-type="staff">
+                                <i class="fas fa-user-plus"></i><span>إضافة موظف</span>
+                            </button>
+                            <button class="btn btn-crud btn-view" data-crud="view" data-type="staff">
+                                <i class="fas fa-users"></i><span>عرض الموظفين</span>
+                            </button>
+                            <button class="btn btn-crud btn-edit" data-crud="edit" data-type="staff">
+                                <i class="fas fa-user-edit"></i><span>تعديل بيانات</span>
+                            </button>
+                            <button class="btn btn-crud btn-delete" data-crud="delete" data-type="staff">
+                                <i class="fas fa-user-times"></i><span>حذف موظف</span>
+                            </button>
+                        </div>
+                        <div class="staff-management">
+                            <div class="staff-grid">
+                                <div class="staff-item">
+                                    <i class="fas fa-user-md"></i>
+                                    <h4>الصيادلة المعتمدين</h4>
+                                    <p>تعيين الصيادلة المرخصين مع تتبع تراخيصهم وفترات العمل وتقييم الأداء بناءً على المبيعات والخدمة</p>
+                                </div>
+                                <div class="staff-item">
+                                    <i class="fas fa-user-nurse"></i>
+                                    <h4>فريق التمريض</h4>
+                                    <p>إدارة الممرضين والممرضات مع جدولة الزيارات المنزلية وتتبع الخدمات المقدمة للمرضى</p>
+                                </div>
+                                <div class="staff-item">
+                                    <i class="fas fa-shipping-fast"></i>
+                                    <h4>مندوبو التوصيل</h4>
+                                    <p>تنظيم مندوبي التوصيل مع تتبع المناطق المخصصة وأوقات التسليم ومعدلات الرضا</p>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="li-items">
+                            <li><i class="fas fa-check-circle"></i>تقارير متقدمة لتحليل أداء كل موظف بناءً على الصلاحيات المحددة والأهداف الشهرية</li>
+                            <li><i class="fas fa-check-circle"></i>متابعة المبيعات المحققة لكل بائع على حدة مع احتساب العمولات والحوافز</li>
+                            <li><i class="fas fa-check-circle"></i>نظام تقييم الأداء الشهري مع توليد شهادات تقدير للموظفين المتميزين</li>
+                        </ul>
+                    </div>
+                    <div class="table-cell">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><rect width='300' height='300' fill='%23e8f5e8'/><rect x='50' y='50' width='200' height='150' fill='%2328a745' rx='10'/><circle cx='100' cy='100' r='20' fill='white'/><circle cx='150' cy='100' r='20' fill='white'/><circle cx='200' cy='100' r='20' fill='white'/><rect x='80' y='140' width='140' height='40' fill='white' rx='5'/></svg>" alt="إدارة الموظفين">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- تابع مخزونك من الأدوية Section -->
+        <section class="section">
+            <div class="container">
+                <div class="display-table">
+                    <div class="table-cell">
+                        <h2>تابع مخزونك من الأدوية بأنواعها</h2>
+                        <div class="crud-buttons">
+                            <button class="btn btn-crud btn-add" data-crud="add" data-type="inventory">
+                                <i class="fas fa-plus"></i><span>إضافة دواء</span>
+                            </button>
+                            <button class="btn btn-crud btn-view" data-crud="view" data-type="inventory">
+                                <i class="fas fa-list"></i><span>عرض المخزون</span>
+                            </button>
+                            <button class="btn btn-crud btn-edit" data-crud="edit" data-type="inventory">
+                                <i class="fas fa-edit"></i><span>تعديل</span>
+                            </button>
+                            <button class="btn btn-crud btn-delete" data-crud="delete" data-type="inventory">
+                                <i class="fas fa-trash"></i><span>حذف</span>
+                            </button>
+                        </div>
+                        <ul class="li-items">
+                            <li><i class="fas fa-check-circle"></i>تتبع حركة الأدوية والمستلزمات الطبية مع تنبيهات ذكية عند اقتراب نفاد الأصناف</li>
+                            <li><i class="fas fa-check-circle"></i>شراء كميات جديدة من الأدوية من الموردين مع مقارنة الأسعار والعروض</li>
+                            <li><i class="fas fa-check-circle"></i>عرض تقارير الجرد التفصيلية لمقارنة الكميات المتوفرة بالمخزون الفعلي</li>
+                            <li><i class="fas fa-check-circle"></i>متابعة قيمة المخزون المتاح من الأدوية مع تحليل معدلات الدوران</li>
+                            <li><i class="fas fa-check-circle"></i>تنبيهات انتهاء الصلاحية مع إمكانية إرجاع الأدوية منتهية الصلاحية للموردين</li>
+                        </ul>
+                    </div>
+                    <div class="table-cell">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><rect width='300' height='300' fill='%23fff3cd'/><rect x='80' y='100' width='40' height='80' fill='%23ffc107' rx='5'/><rect x='130' y='80' width='40' height='100' fill='%23ffc107' rx='5'/><rect x='180' y='120' width='40' height='60' fill='%23ffc107' rx='5'/><circle cx='100' cy='60' r='15' fill='%23dc3545'/><circle cx='150' cy='40' r='15' fill='%23dc3545'/><circle cx='200' cy='80' r='15' fill='%23dc3545'/></svg>" alt="إدارة المخزون">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- أضف المصاريف والمرتبات Section -->
+        <section class="section section-inverse">
+            <div class="container">
+                <div class="display-table">
+                    <div class="table-cell">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><rect width='300' height='300' fill='%23e3f2fd'/><rect x='100' y='50' width='100' height='200' fill='%23007bff' rx='10'/><circle cx='130' cy='100' r='8' fill='white'/><circle cx='150' cy='100' r='8' fill='white'/><circle cx='170' cy='100' r='8' fill='white'/><rect x='120' y='120' width='60' height='8' fill='white'/><rect x='120' y='140' width='60' height='8' fill='white'/><rect x='120' y='160' width='60' height='8' fill='white'/></svg>" alt="إدارة المصاريف">
+                    </div>
+                    <div class="table-cell">
+                        <h2>أضف المصاريف والمرتبات واحسب صافي الدخل</h2>
+                        <div class="crud-buttons">
+                            <button class="btn btn-crud btn-add" data-crud="add" data-type="expense">
+                                <i class="fas fa-plus"></i><span>إضافة مصروف</span>
+                            </button>
+                            <button class="btn btn-crud btn-view" data-crud="view" data-type="expense">
+                                <i class="fas fa-list"></i><span>عرض المصاريف</span>
+                            </button>
+                            <button class="btn btn-crud btn-edit" data-crud="edit" data-type="expense">
+                                <i class="fas fa-edit"></i><span>تعديل</span>
+                            </button>
+                            <button class="btn btn-crud btn-delete" data-crud="delete" data-type="expense">
+                                <i class="fas fa-trash"></i><span>حذف</span>
+                            </button>
+                        </div>
+                        <ul class="li-items">
+                            <li><i class="fas fa-check-circle"></i>إدارة شاملة لمصاريف الصيدلية (إيجارات، رواتب، فواتير الكهرباء والماء، مشتريات) وحساب صافي الدخل بدقة</li>
+                            <li><i class="fas fa-check-circle"></i>تصنيف المصاريف حسب النوع والقسم مع إمكانية إنشاء ميزانيات شهرية وسنوية</li>
+                            <li><i class="fas fa-check-circle"></i>حساب تكاليف التشغيل لكل منتج وتحديد هوامش الربح المناسبة</li>
+                            <li><i class="fas fa-check-circle"></i>تقارير مالية متقدمة تشمل بيان الأرباح والخسائر والتدفقات النقدية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- لماذا الصافي؟ Section with Enhanced Flip Cards -->
+        <section class="section">
+            <div class="container">
+                <h2>لماذا الصافي؟</h2>
+                <div class="features-grid">
+                    <div class="flip-card" data-flip>
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%2328a745'/><path d='M30 45 L45 60 L70 35' stroke='white' stroke-width='6' fill='none'/></svg>" alt="دعم سريع">
+                                <h3>دعم سريع ومجاني</h3>
+                                <p>فريق دعم فني متخصص متاح 24/7 عبر البريد الإلكتروني والهاتف والواتساب.</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>دعم متعدد القنوات</h3>
+                                <p>دعمنا الفني يضمن حل سريع لأي استفسار أو مشكلة، مع توفر دعم متعدد القنوات وتدريب مجاني للفريق.</p>
+                                <button class="btn btn-crud btn-add" style="background: white; color: #28a745;">
+                                    <i class="fas fa-headset"></i><span>دعم فني</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" data-flip>
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23007bff'/><circle cx='50' cy='50' r='35' fill='none' stroke='white' stroke-width='3'/><path d='M50 20 L50 50 L70 70' stroke='white' stroke-width='4' fill='none'/></svg>" alt="توفير الوقت">
+                                <h3>وفر الوقت والمجهود</h3>
+                                <p>إنشاء فواتير وعروض أسعار بسرعة بفضل واجهة سهلة الاستخدام ونظام أتمتة ذكي.</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>أتمتة ذكية</h3>
+                                <p>واجهة مستخدم بسيطة تتيح إدارة جميع العمليات بضغطات قليلة مع توفير قوالب جاهزة وإعدادات تلقائية.</p>
+                                <button class="btn btn-crud btn-view" style="background: white; color: #007bff;">
+                                    <i class="fas fa-robot"></i><span>أتمتة</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" data-flip>
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%2317a2b8'/><circle cx='35' cy='35' r='8' fill='white'/><circle cx='65' cy='35' r='8' fill='white'/><circle cx='50' cy='65' r='8' fill='white'/><path d='M35 35 L65 35 L50 65 Z' fill='none' stroke='white' stroke-width='2'/></svg>" alt="من أي مكان">
+                                <h3>في أي وقت ومن أي مكان</h3>
+                                <p>نظام سحابي متطور يعمل على جميع الأجهزة المتصلة بالإنترنت بأمان عالي.</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>مرونة كاملة</h3>
+                                <p>إدارة الصيدلية من هاتفك أو جهازك اللوحي في أي وقت ومكان مع مزامنة فورية للبيانات.</p>
+                                <button class="btn btn-crud btn-edit" style="background: white; color: #17a2b8;">
+                                    <i class="fas fa-cloud"></i><span>سحابي</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" data-flip>
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23dc3545'/><rect x='35' y='25' width='30' height='50' fill='white' rx='3'/><circle cx='50' cy='35' r='3' fill='%23dc3545'/><rect x='45' y='42' width='10' height='2' fill='%23dc3545'/><rect x='45' y='46' width='10' height='2' fill='%23dc3545'/><rect x='45' y='50' width='10' height='2' fill='%23dc3545'/></svg>" alt="آمن ومحمي">
+                                <h3>آمن ومحمي</h3>
+                                <p>بياناتك مشفرة بتقنية SSL 256-bit مع نسخ احتياطية تلقائية وحماية متعددة المستويات.</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <h3>أمان متقدم</h3>
+                                <p>حماية بياناتك بأعلى معايير الأمان العالمية مع تحديثات دورية وحماية من الفيروسات والاختراق.</p>
+                                <button class="btn btn-crud btn-delete" style="background: white; color: #dc3545;">
+                                    <i class="fas fa-shield-alt"></i><span>آمن</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buttons Section -->
+        <section class="buttons-section section-inverse">
+            <div class="container">
+                <h2>استكشف المزيد من المميزات</h2>
+                <div class="buttons-grid">
+                    <a href="#" class="btn btn-blue" data-modal="videoModal">
+                        <i class="fab fa-youtube"></i><span>فيديو شرح البرنامج</span>
+                    </a>
+                    <a href="#" class="btn btn-primary" data-modal="featuresModal">
+                        <i class="fas fa-list"></i><span>مميزات البرنامج</span>
+                    </a>
+                    <a href="#" class="btn btn-blue" data-modal="specificationsModal">
+                        <i class="fas fa-file-alt"></i><span>مواصفات البرنامج</span>
+                    </a>
+                    <a href="#" class="btn btn-primary" data-modal="galleryModal">
+                        <i class="fas fa-images"></i><span>صور البرنامج</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div>
+                        <h3>برامج الصافي</h3>
+                        <ul>
+                            <li><a href="/accounting"><i class="fas fa-calculator"></i>برنامج الحسابات</a></li>
+                            <li><a href="/sales"><i class="fas fa-shopping-cart"></i>برنامج المبيعات</a></li>
+                            <li><a href="/pharmacy"><i class="fas fa-prescription-bottle"></i>برنامج إدارة الصيدليات</a></li>
+                            <li><a href="/erp"><i class="fas fa-cogs"></i>برنامج الصافي ERP</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>خريطة الموقع</h3>
+                        <ul>
+                            <li><a href="#" data-modal="tourModal"><i class="fas fa-eye"></i>جولة سريعة</a></li>
+                            <li><a href="/register"><i class="fas fa-user-plus"></i>تسجيل</a></li>
+                            <li><a href="/about"><i class="fas fa-info-circle"></i>عن الصافي</a></li>
+                            <li><a href="/pricing"><i class="fas fa-tags"></i>الأسعار</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>تواصل معنا</h3>
+                        <ul>
+                            <li><i class="fas fa-map-marker-alt"></i>فلسطين - رام الله</li>
+                            <li><a href="tel:+970598056654"><i class="fas fa-phone"></i>0598056654</a></li>
+                            <li><a href="mailto:info@alsafisys.com"><i class="fas fa-envelope"></i>info@alsafisys.com</a></li>
+                            <li><a href="https://api.whatsapp.com/send?phone=970598056654"><i class="fab fa-whatsapp"></i>واتساب</a></li>
+                        </ul>
+                        <div class="social-links">
+                            <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>معلومات مهمة</h3>
+                        <ul>
+                            <li><a href="/privacy"><i class="fas fa-shield-alt"></i>سياسة الخصوصية</a></li>
+                            <li><a href="/terms"><i class="fas fa-file-contract"></i>شروط الاستخدام</a></li>
+                            <li><a href="/support"><i class="fas fa-headset"></i>الدعم الفني</a></li>
+                            <li><a href="/blog"><i class="fas fa-blog"></i>المدونة</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="copyright">
+                    <p>© الصافي 2025. جميع الحقوق محفوظة 
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'><rect width='100' height='50' fill='%2328a745'/><text x='50' y='30' font-family='Arial' font-size='12' fill='white' text-anchor='middle'>SSL</text></svg>" alt="SSL Secure">
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="crudModal" class="modal">
+        <div class="modal-content crud-dialog">
+            <span class="close">&times;</span>
+            <h3 id="crudTitle">إدارة البيانات</h3>
+            <div class="modal-body" id="crudBody"></div>
+        </div>
+    </div>
+
+    <div id="featuresModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>مميزات برنامج إدارة الصيدليات</h3>
+            <div class="modal-body">
+                <ul class="modal-features">
+                    <li><i class="fas fa-check-circle"></i>إدارة شاملة للمخزون مع تنبيهات الصلاحية</li>
+                    <li><i class="fas fa-check-circle"></i>نظام نقاط البيع المتطور مع دعم الباركود</li>
+                    <li><i class="fas fa-check-circle"></i>إدارة العملاء والوصفات الطبية</li>
+                    <li><i class="fas fa-check-circle"></i>تقارير مالية ومحاسبية مفصلة</li>
+                    <li><i class="fas fa-check-circle"></i>إدارة الموظفين والصلاحيات</li>
+                    <li><i class="fas fa-check-circle"></i>ربط مع شركات التأمين</li>
+                    <li><i class="fas fa-check-circle"></i>تطبيق محمول للإدارة عن بُعد</li>
+                    <li><i class="fas fa-check-circle"></i>نسخ احتياطية تلقائية</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="tourModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>جولة سريعة في البرنامج</h3>
+            <div class="modal-body">
+                <p>اكتشف كيف يمكن لبرنامج الصافي أن يساعدك في إدارة صيدليتك بكفاءة:</p>
+                <ul class="modal-features">
+                    <li><i class="fas fa-play"></i>لوحة التحكم الرئيسية - نظرة شاملة على أداء الصيدلية</li>
+                    <li><i class="fas fa-play"></i>إدارة المبيعات - معالجة سريعة للفواتير</li>
+                    <li><i class="fas fa-play"></i>تتبع المخزون - مراقبة مستمرة للأدوية</li>
+                    <li><i class="fas fa-play"></i>التقارير المالية - تحليلات دقيقة للأرباح</li>
+                </ul>
+                <p>احجز جلسة تجريبية مجانية مع فريقنا لتتعلم كيفية استخدام البرنامج بأقصى كفاءة.</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="tel:+970598056654" class="btn btn-primary">
+                        <i class="fas fa-phone"></i><span>احجز جلسة تجريبية</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="staffModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>إدارة الموظفين والصيادلة</h3>
+            <div class="modal-body">
+                <p>نظام إدارة شامل للموظفين يشمل جميع فئات العاملين في الصيدلية:</p>
+                <ul class="modal-features">
+                    <li><i class="fas fa-user-md"></i><strong>الصيادلة المعتمدين:</strong> إدارة تراخيص الصيادلة وتجديدها تلقائياً</li>
+                    <li><i class="fas fa-user-nurse"></i><strong>فريق التمريض:</strong> جدولة الزيارات المنزلية وتتبع الخدمات</li>
+                    <li><i class="fas fa-shipping-fast"></i><strong>مندوبو التوصيل:</strong> تنظيم مناطق التوصيل وتتبع الطلبات</li>
+                    <li><i class="fas fa-cash-register"></i><strong>موظفو المبيعات:</strong> تتبع أداء البائعين وحساب العمولات</li>
+                    <li><i class="fas fa-chart-line"></i><strong>تقارير الأداء:</strong> تحليل أداء الموظفين بناءً على المبيعات والخدمات</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" data-crud="add" data-type="staff">
+                        <i class="fas fa-user-plus"></i><span>إضافة موظف جديد</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="inventoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>إدارة المخزون</h3>
+            <div class="modal-body">
+                <p>نظام متكامل لإدارة مخزون الصيدلية بكفاءة عالية:</p>
+                <ul class="modal-features">
+                    <li><i class="fas fa-warehouse"></i><strong>تتبع المخزون:</strong> مراقبة كميات الأدوية والمستلزمات في الوقت الحقيقي</li>
+                    <li><i class="fas fa-bell"></i><strong>تنبيهات ذكية:</strong> إشعارات عند اقتراب نفاد الأصناف أو انتهاء الصلاحية</li>
+                    <li><i class="fas fa-truck"></i><strong>إدارة الموردين:</strong> تسجيل المشتريات ومقارنة الأسعار</li>
+                    <li><i class="fas fa-chart-bar"></i><strong>تقارير الجرد:</strong> تحليل مفصل للمخزون ومعدلات الدوران</li>
+                    <li><i class="fas fa-sync"></i><strong>مزامنة تلقائية:</strong> تحديث المخزون عبر نقاط البيع والمبيعات</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" data-crud="add" data-type="inventory">
+                        <i class="fas fa-plus"></i><span>إضافة دواء جديد</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>التقارير المالية والإدارية</h3>
+            <div class="modal-body">
+                <p>تقارير متقدمة لتحليل أداء الصيدلية واتخاذ قرارات مستنيرة:</p>
+                <ul class="modal-features">
+                    <li><i class="fas fa-chart-line"></i><strong>تقارير المبيعات:</strong> تحليل المبيعات اليومية والشهرية حسب الصنف أو الموظف</li>
+                    <li><i class="fas fa-coins"></i><strong>الأرباح والخسائر:</strong> عرض صافي الدخل مع تفاصيل المصروفات</li>
+                    <li><i class="fas fa-boxes"></i><strong>تقارير المخزون:</strong> مراقبة معدلات دوران المخزون</li>
+                    <li><i class="fas fa-users"></i><strong>تقارير العملاء:</strong> تحليل سلوك العملاء وتفضيلاتهم</li>
+                    <li><i class="fas fa-download"></i><strong>تصدير التقارير:</strong> تحميل التقارير بصيغ PDF وExcel</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" data-crud="view" data-type="reports">
+                        <i class="fas fa-chart-bar"></i><span>عرض التقارير</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>فيديو شرح برنامج الصافي</h3>
+            <div class="modal-body">
+                <p>شاهد فيديو تعريفي يوضح كيفية استخدام برنامج الصافي لإدارة الصيدليات بسهولة وكفاءة.</p>
+                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                    <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/placeholder" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="./register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i><span>جرب البرنامج الآن</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="specificationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>مواصفات برنامج الصافي</h3>
+            <div class="modal-body">
+                <p>برنامج الصافي مزود بمواصفات تقنية متقدمة لتلبية احتياجات الصيدليات:</p>
+                <ul class="modal-features">
+                    <li><i class="fas fa-cloud"></i><strong>نظام سحابي:</strong> يعمل على أي جهاز متصل بالإنترنت</li>
+                    <li><i class="fas fa-shield-alt"></i><strong>الأمان:</strong> تشفير SSL 256-bit ونسخ احتياطية يومية</li>
+                    <li><i class="fas fa-mobile-alt"></i><strong>تطبيق محمول:</strong> متوفر على iOS وAndroid</li>
+                    <li><i class="fas fa-plug"></i><strong>التكامل:</strong> ربط مع طابعات الباركود ونقاط البيع</li>
+                    <li><i class="fas fa-language"></i><strong>دعم اللغة العربية:</strong> واجهة مستخدم كاملة بالعربية</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="/pricing" class="btn btn-primary">
+                        <i class="fas fa-tags"></i><span>عرض خطط الأسعار</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="galleryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>صور برنامج الصافي</h3>
+            <div class="modal-body">
+                <p>استعرض لقطات شاشة من واجهة البرنامج للتعرف على سهولة الاستخدام:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect width='200' height='150' fill='%23e3f2fd'/><rect x='10' y='10' width='180' height='130' fill='%23007bff' rx='5'/><text x='100' y='85' font-family='Arial' font-size='14' fill='white' text-anchor='middle'>لوحة التحكم</text></svg>" alt="لوحة التحكم" style="width: 100%; border-radius: 8px;">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect width='200' height='150' fill='%23e8f5e8'/><rect x='10' y='10' width='180' height='130' fill='%2328a745' rx='5'/><text x='100' y='85' font-family='Arial' font-size='14' fill='white' text-anchor='middle'>إدارة المخزون</text></svg>" alt="إدارة المخزون" style="width: 100%; border-radius: 8px;">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect width='200' height='150' fill='%23fff3cd'/><rect x='10' y='10' width='180' height='130' fill='%23ffc107' rx='5'/><text x='100' y='85' font-family='Arial' font-size='14' fill='white' text-anchor='middle'>التقارير</text></svg>" alt="التقارير" style="width: 100%; border-radius: 8px;">
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="/register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i><span>جرب البرنامج الآن</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+</html>
