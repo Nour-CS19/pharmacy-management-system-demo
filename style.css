@@ -372,7 +372,6 @@ body {
     height: 100%;
     background: url('./assets/images/2025_03_02_02_07_44_alshh-alnfsyh.png') center/cover no-repeat ;
     z-index: 0;
-    opacity: 0.555555;
     animation: fadeIn 1s ease;
 }
 

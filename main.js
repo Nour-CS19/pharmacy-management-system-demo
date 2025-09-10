@@ -1,4 +1,6 @@
-// Enhanced Mobile Navigation
+// Fixed Complete Working Mobile Navigation with CRUD System
+// All form inputs and buttons now work properly
+
 class MobileNavigation {
     constructor() {
         this.mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
@@ -8,12 +10,13 @@ class MobileNavigation {
     }
 
     init() {
-        if (!this.mobileMenuToggle || !this.mainNav) return;
+        if (!this.mobileMenuToggle || !this.mainNav) {
+            console.warn('Mobile navigation elements not found');
+            return;
+        }
         
-        // Mobile menu toggle
         this.mobileMenuToggle.addEventListener('click', () => this.toggleMobileMenu());
         
-        // Handle dropdown clicks on mobile
         this.dropdowns.forEach(dropdown => {
             const dropdownLink = dropdown.querySelector('a');
             if (dropdownLink) {
@@ -21,30 +24,13 @@ class MobileNavigation {
             }
         });
 
-        // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => this.handleOutsideClick(e));
-        
-        // Handle window resize
         window.addEventListener('resize', () => this.handleResize());
     }
 
     toggleMobileMenu() {
         this.mobileMenuToggle.classList.toggle('active');
-        
-        if (this.mainNav.classList.contains('mobile-nav')) {
-            // Close mobile menu
-            this.mainNav.classList.remove('active');
-            setTimeout(() => {
-                this.mainNav.classList.remove('mobile-nav');
-                this.hideAllSubmenus();
-            }, 300);
-        } else {
-            // Open mobile menu
-            this.mainNav.classList.add('mobile-nav');
-            setTimeout(() => {
-                this.mainNav.classList.add('active');
-            }, 10);
-        }
+        this.mainNav.classList.toggle('mobile-active');
     }
 
     handleDropdownClick(e, dropdown) {
@@ -52,74 +38,116 @@ class MobileNavigation {
             e.preventDefault();
             const submenu = dropdown.querySelector('.submenu');
             if (submenu) {
-                const isOpen = submenu.style.display === 'grid';
-                this.hideAllSubmenus();
-                if (!isOpen) {
-                    submenu.style.display = 'grid';
-                    submenu.style.opacity = '1';
-                    submenu.style.visibility = 'visible';
-                }
+                submenu.classList.toggle('show');
             }
         }
     }
 
     handleOutsideClick(e) {
-        if (!e.target.closest('.header') && this.mainNav.classList.contains('active')) {
+        if (!e.target.closest('.header') && this.mainNav.classList.contains('mobile-active')) {
             this.toggleMobileMenu();
         }
     }
 
     handleResize() {
         if (window.innerWidth > 768) {
-            this.mainNav.classList.remove('mobile-nav', 'active');
+            this.mainNav.classList.remove('mobile-active');
             this.mobileMenuToggle.classList.remove('active');
-            this.hideAllSubmenus();
         }
-    }
-
-    hideAllSubmenus() {
-        const submenus = document.querySelectorAll('.submenu');
-        submenus.forEach(submenu => {
-            submenu.style.display = '';
-            submenu.style.opacity = '';
-            submenu.style.visibility = '';
-        });
     }
 }
 
-// Enhanced Modal System
 class ModalSystem {
     constructor() {
         this.modals = new Map();
+        this.isInitialized = false;
         this.init();
     }
 
     init() {
-        // Initialize all modals
+        // Create modal structure if it doesn't exist
+        this.ensureModalExists();
+        
+        // Initialize existing modals
         document.querySelectorAll('.modal').forEach(modal => {
-            this.modals.set(modal.id, {
-                element: modal,
-                content: modal.querySelector('.modal-content'),
-                isOpen: false
-            });
+            this.registerModal(modal);
         });
 
-        // Handle modal close buttons
-        document.querySelectorAll('.close').forEach(closeBtn => {
-            closeBtn.addEventListener('click', (e) => {
-                const modal = e.target.closest('.modal');
-                if (modal) this.closeModal(modal.id);
-            });
-        });
+        this.setupEventListeners();
+        this.setupMobileOptimizations();
+        this.isInitialized = true;
+        console.log('ModalSystem initialized successfully');
+    }
 
-        // Handle background clicks
+    ensureModalExists() {
+        if (!document.getElementById('crudModal')) {
+            const modalHTML = `
+                <div id="crudModal" class="modal half-page-modal">
+                    <div class="modal-backdrop"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="crudTitle">إدارة البيانات</h3>
+                            <button class="modal-close" type="button" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="modal-body" id="crudBody">
+                            <!-- Content will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+    }
+
+    registerModal(modal) {
+        this.modals.set(modal.id, {
+            element: modal,
+            content: modal.querySelector('.modal-content'),
+            body: modal.querySelector('.modal-body'),
+            isOpen: false
+        });
+    }
+
+    setupEventListeners() {
+        // Use event delegation to handle dynamically created buttons
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                this.closeModal(e.target.id);
+            // Handle close buttons
+            if (e.target.matches('.modal-close') || e.target.innerHTML === '×') {
+                e.preventDefault();
+                e.stopPropagation();
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    console.log('Close button clicked for modal:', modal.id);
+                    this.closeModal(modal.id);
+                }
+                return;
+            }
+
+            // Handle backdrop clicks
+            if (e.target.matches('.modal-backdrop')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    console.log('Backdrop clicked for modal:', modal.id);
+                    this.closeModal(modal.id);
+                }
+                return;
+            }
+
+            // Handle modal trigger buttons
+            if (e.target.matches('[data-modal]') || e.target.closest('[data-modal]')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const trigger = e.target.closest('[data-modal]') || e.target;
+                const modalId = trigger.getAttribute('data-modal');
+                console.log('Modal trigger clicked:', modalId);
+                this.openModal(modalId);
+                return;
             }
         });
 
-        // Handle escape key
+        // ESC key events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeAllModals();
@@ -127,44 +155,135 @@ class ModalSystem {
         });
     }
 
-    openModal(modalId, content = null) {
-        const modal = this.modals.get(modalId);
-        if (!modal) return;
+    setupMobileOptimizations() {
+        // Touch events for mobile
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
 
-        if (content) {
-            const bodyElement = modal.element.querySelector('#crudBody') || modal.element.querySelector('.modal-body');
-            if (bodyElement) bodyElement.innerHTML = content;
+        document.addEventListener('touchstart', (e) => {
+            const modalContent = e.target.closest('.modal-content');
+            if (modalContent && modalContent.closest('.half-page-modal')) {
+                startY = e.touches[0].clientY;
+                isDragging = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            
+            if (diff > 0) {
+                const modalContent = e.target.closest('.modal-content');
+                if (modalContent) {
+                    modalContent.style.transform = `translateY(${Math.min(diff, 100)}px)`;
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            
+            const diff = currentY - startY;
+            const modalContent = e.target.closest('.modal-content');
+            
+            if (diff > 100 && modalContent) {
+                const modal = modalContent.closest('.modal');
+                if (modal) this.closeModal(modal.id);
+            } else if (modalContent) {
+                modalContent.style.transform = '';
+            }
+            
+            isDragging = false;
+        }, { passive: true });
+
+        // Viewport changes (keyboard handling)
+        this.setupViewportHandler();
+    }
+
+    setupViewportHandler() {
+        let lastHeight = window.innerHeight;
+        
+        const handleResize = () => {
+            const currentHeight = window.innerHeight;
+            const heightDiff = lastHeight - currentHeight;
+            
+            if (heightDiff > 150) {
+                document.body.classList.add('keyboard-open');
+            } else {
+                document.body.classList.remove('keyboard-open');
+            }
+            
+            lastHeight = currentHeight;
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(handleResize, 500);
+        });
+    }
+
+    openModal(modalId, content = null) {
+        console.log('Opening modal:', modalId);
+        const modal = this.modals.get(modalId);
+        if (!modal) {
+            console.error(`Modal ${modalId} not found`);
+            return;
         }
 
+        // Set content if provided
+        if (content && modal.body) {
+            modal.body.innerHTML = content;
+        }
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
+        
+        // Show modal
         modal.element.style.display = 'block';
+        modal.element.classList.add('modal-active');
         modal.isOpen = true;
         
-        // Prevent body scrolling
-        document.body.style.overflow = 'hidden';
+        // Trigger reflow
+        modal.element.offsetHeight;
         
-        // Animate in
+        // Focus management
         setTimeout(() => {
-            modal.content.style.transform = 'translateY(0) scale(1)';
-            modal.content.style.opacity = '1';
-        }, 10);
+            const firstInput = modal.element.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 300);
+
+        console.log(`Modal ${modalId} opened successfully`);
     }
 
     closeModal(modalId) {
+        console.log('Closing modal:', modalId);
         const modal = this.modals.get(modalId);
-        if (!modal || !modal.isOpen) return;
+        if (!modal || !modal.isOpen) {
+            console.log('Modal not found or not open');
+            return;
+        }
 
-        modal.content.style.transform = 'translateY(-50px) scale(0.8)';
-        modal.content.style.opacity = '0';
+        modal.element.classList.remove('modal-active');
+        modal.isOpen = false;
         
         setTimeout(() => {
             modal.element.style.display = 'none';
-            modal.isOpen = false;
             
-            // Re-enable body scrolling if no modals are open
-            if (!Array.from(this.modals.values()).some(m => m.isOpen)) {
+            // Check if any other modals are open
+            const hasOpenModal = Array.from(this.modals.values()).some(m => m.isOpen);
+            if (!hasOpenModal) {
                 document.body.style.overflow = '';
+                document.body.classList.remove('modal-open', 'keyboard-open');
             }
         }, 300);
+
+        console.log(`Modal ${modalId} closed successfully`);
     }
 
     closeAllModals() {
@@ -174,48 +293,6 @@ class ModalSystem {
     }
 }
 
-// Enhanced Card Flip System
-class CardFlipSystem {
-    constructor() {
-        this.cards = document.querySelectorAll('.flip-card');
-        this.init();
-    }
-
-    init() {
-        this.cards.forEach(card => {
-            // Add click event for manual toggle
-            card.addEventListener('click', () => this.toggleCard(card));
-            
-            // Add keyboard support
-            card.setAttribute('tabindex', '0');
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.toggleCard(card);
-                }
-            });
-        });
-    }
-
-    toggleCard(card) {
-        card.classList.toggle('flipped');
-        
-        // Add haptic feedback if available
-        if (navigator.vibrate) {
-            navigator.vibrate(50);
-        }
-    }
-
-    flipAll() {
-        this.cards.forEach(card => card.classList.add('flipped'));
-    }
-
-    resetAll() {
-        this.cards.forEach(card => card.classList.remove('flipped'));
-    }
-}
-
-// Enhanced CRUD System
 class CrudSystem {
     constructor(modalSystem) {
         this.modalSystem = modalSystem;
@@ -224,936 +301,1061 @@ class CrudSystem {
     }
 
     init() {
-        // Initialize with sample data
         this.loadSampleData();
+        this.setupEventListeners();
+        console.log('CrudSystem initialized');
     }
 
     loadSampleData() {
+        // Sample data for demonstration
         this.currentData.set('pharmacy', [
-            { id: 1, name: 'الحساب الرئيسي', balance: '5000 د.أ', lastTransaction: '2025-09-10' },
-            { id: 2, name: 'حساب التوفير', balance: '3000 د.أ', lastTransaction: '2025-09-05' }
+            { id: 1, name: 'الحساب الرئيسي', balance: 5000, date: '2025-09-10' },
+            { id: 2, name: 'حساب التوفير', balance: 3000, date: '2025-09-05' }
         ]);
 
         this.currentData.set('customer', [
-            { id: 1, name: 'محمد أحمد', phone: '0598056654', lastVisit: '2025-09-10', address: 'غزة' },
-            { id: 2, name: 'سارة محمود', phone: '0599123456', lastVisit: '2025-09-08', address: 'رفح' }
+            { id: 1, name: 'محمد أحمد', phone: '0598056654', address: 'غزة', lastVisit: '2025-09-10' },
+            { id: 2, name: 'سارة محمود', phone: '0599123456', address: 'رفح', lastVisit: '2025-09-08' }
         ]);
 
         this.currentData.set('staff', [
             { id: 1, name: 'أحمد خالد', position: 'صيدلي', phone: '0598056654', hireDate: '2024-01-15' },
             { id: 2, name: 'فاطمة علي', position: 'ممرضة', phone: '0597654321', hireDate: '2024-03-20' }
         ]);
-
-        this.currentData.set('inventory', [
-            { id: 1, name: 'باراسيتامول', quantity: 100, expiryDate: '2026-12-31', supplier: 'شركة الأدوية' },
-            { id: 2, name: 'إيبوبروفين', quantity: 75, expiryDate: '2026-08-15', supplier: 'شركة الصحة' }
-        ]);
-
-        this.currentData.set('expense', [
-            { id: 1, type: 'إيجار', amount: '1000 د.أ', date: '2025-09-01', description: 'إيجار الصيدلية الشهري' },
-            { id: 2, type: 'رواتب', amount: '2500 د.أ', date: '2025-09-01', description: 'رواتب الموظفين' }
-        ]);
     }
 
-    openCrudDialog(action, type, itemId = null) {
-        const crudModal = document.getElementById('crudModal');
-        const crudTitle = document.getElementById('crudTitle');
+    setupEventListeners() {
+        // Use event delegation for better handling of dynamic content
+        document.addEventListener('click', (e) => {
+            // Handle CRUD action buttons
+            const crudButton = e.target.closest('[data-crud]');
+            if (crudButton) {
+                e.preventDefault();
+                e.stopPropagation();
+                const action = crudButton.getAttribute('data-crud');
+                const type = crudButton.getAttribute('data-type');
+                const itemId = crudButton.getAttribute('data-item-id');
+                console.log('CRUD button clicked:', { action, type, itemId });
+                this.handleCrudAction(action, type, itemId);
+                return;
+            }
+        });
+
+        // Handle form submissions using event delegation
+        document.addEventListener('submit', (e) => {
+            if (e.target.matches('.crud-form')) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Form submitted');
+                this.handleFormSubmit(e);
+                return;
+            }
+        });
+    }
+
+    handleCrudAction(action, type, itemId) {
+        console.log(`CRUD Action: ${action}, Type: ${type}, ID: ${itemId}`);
         
-        if (!crudModal || !crudTitle) {
-            console.error('CRUD modal elements not found');
-            return;
-        }
-
-        const titles = {
-            pharmacy: { add: 'إضافة حساب صيدلية جديد', view: 'عرض حسابات الصيدلية', edit: 'تعديل حساب صيدلية', delete: 'حذف حساب صيدلية' },
-            customer: { add: 'إضافة عميل جديد', view: 'عرض العملاء', edit: 'تعديل بيانات عميل', delete: 'حذف عميل' },
-            staff: { add: 'إضافة موظف جديد', view: 'عرض الموظفين', edit: 'تعديل بيانات موظف', delete: 'حذف موظف' },
-            inventory: { add: 'إضافة دواء جديد', view: 'عرض المخزون', edit: 'تعديل بيانات دواء', delete: 'حذف دواء' },
-            expense: { add: 'إضافة مصروف جديد', view: 'عرض المصاريف', edit: 'تعديل مصروف', delete: 'حذف مصروف' },
-            reports: { view: 'عرض التقارير' }
-        };
-
-        const title = titles[type]?.[action] || 'إدارة البيانات';
+        const title = this.getModalTitle(action, type);
         const content = this.generateContent(action, type, itemId);
-
-        crudTitle.textContent = title;
+        
+        // Update modal title
+        const titleElement = document.getElementById('crudTitle');
+        if (titleElement) titleElement.textContent = title;
+        
+        // Open modal with content
         this.modalSystem.openModal('crudModal', content);
     }
 
-    generateContent(action, type, itemId = null) {
-        if (action === 'view') {
-            return this.generateViewContent(type);
-        } else if (action === 'add' || action === 'edit') {
-            return this.generateFormContent(type, action, itemId);
-        } else if (action === 'delete') {
-            return this.generateDeleteContent(type, itemId);
-        } else if (type === 'reports') {
-            return this.generateReportsContent();
+    getModalTitle(action, type) {
+        const titles = {
+            pharmacy: {
+                add: 'إضافة حساب جديد',
+                edit: 'تعديل الحساب',
+                delete: 'حذف الحساب',
+                view: 'عرض الحسابات'
+            },
+            customer: {
+                add: 'إضافة عميل جديد',
+                edit: 'تعديل بيانات العميل',
+                delete: 'حذف العميل',
+                view: 'عرض العملاء'
+            },
+            staff: {
+                add: 'إضافة موظف جديد',
+                edit: 'تعديل بيانات الموظف',
+                delete: 'حذف الموظف',
+                view: 'عرض الموظفين'
+            }
+        };
+
+        return titles[type]?.[action] || 'إدارة البيانات';
+    }
+
+    generateContent(action, type, itemId) {
+        switch (action) {
+            case 'view':
+                return this.generateViewContent(type);
+            case 'add':
+                return this.generateFormContent(type, 'add');
+            case 'edit':
+                return this.generateFormContent(type, 'edit', itemId);
+            case 'delete':
+                return this.generateDeleteContent(type, itemId);
+            default:
+                return '<p>المحتوى غير متاح</p>';
         }
-        return '<p>المحتوى غير متاح</p>';
     }
 
     generateViewContent(type) {
         const data = this.currentData.get(type) || [];
+        const headers = this.getTableHeaders(type);
         
-        const headers = {
-            pharmacy: ['اسم الحساب', 'الرصيد', 'آخر معاملة', 'الإجراءات'],
-            customer: ['اسم العميل', 'رقم الهاتف', 'آخر زيارة', 'الإجراءات'],
-            staff: ['اسم الموظف', 'الوظيفة', 'رقم الهاتف', 'الإجراءات'],
-            inventory: ['اسم الدواء', 'الكمية', 'تاريخ الصلاحية', 'الإجراءات'],
-            expense: ['نوع المصروف', 'المبلغ', 'التاريخ', 'الإجراءات']
-        };
-
-        const headerRow = headers[type] || [];
-        const rows = data.map(item => this.generateTableRow(type, item)).join('');
+        let tableRows = '';
+        data.forEach(item => {
+            const row = this.generateTableRow(type, item);
+            tableRows += row;
+        });
 
         return `
-            <div class="table-container" style="overflow-x: auto;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            ${headerRow.map(header => `<th>${header}</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rows}
-                    </tbody>
-                </table>
-                <div class="crud-buttons" style="margin-top: 20px;">
-                    <button class="btn btn-add btn-crud" onclick="crudSystem.openCrudDialog('add', '${type}')">
-                        <i class="fas fa-plus"></i><span>إضافة جديد</span>
+            <div class="crud-view-container">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows || '<tr><td colspan="' + headers.length + '" style="text-align: center; padding: 20px;">لا توجد بيانات</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="view-actions">
+                    <button type="button" class="btn btn-primary" data-crud="add" data-type="${type}">
+                        <i class="fas fa-plus"></i>
+                        <span>إضافة جديد</span>
                     </button>
                 </div>
             </div>
         `;
+    }
+
+    getTableHeaders(type) {
+        const headers = {
+            pharmacy: ['اسم الحساب', 'الرصيد', 'التاريخ', 'الإجراءات'],
+            customer: ['الاسم', 'الهاتف', 'العنوان', 'الإجراءات'],
+            staff: ['الاسم', 'المنصب', 'الهاتف', 'الإجراءات']
+        };
+        return headers[type] || [];
     }
 
     generateTableRow(type, item) {
         const actionButtons = `
             <div class="action-buttons">
-                <button class="btn btn-edit btn-crud" onclick="crudSystem.openCrudDialog('edit', '${type}', ${item.id})">
-                    <i class="fas fa-edit"></i><span>تعديل</span>
+                <button type="button" class="btn btn-sm btn-edit" data-crud="edit" data-type="${type}" data-item-id="${item.id}">
+                    <i class="fas fa-edit"></i>
+                    <span>تعديل</span>
                 </button>
-                <button class="btn btn-delete btn-crud" onclick="crudSystem.openCrudDialog('delete', '${type}', ${item.id})">
-                    <i class="fas fa-trash"></i><span>حذف</span>
+                <button type="button" class="btn btn-sm btn-delete" data-crud="delete" data-type="${type}" data-item-id="${item.id}">
+                    <i class="fas fa-trash"></i>
+                    <span>حذف</span>
                 </button>
             </div>
         `;
 
-        const rowData = {
-            pharmacy: [item.name, item.balance, item.lastTransaction, actionButtons],
-            customer: [item.name, item.phone, item.lastVisit, actionButtons],
-            staff: [item.name, item.position, item.phone, actionButtons],
-            inventory: [item.name, item.quantity, item.expiryDate, actionButtons],
-            expense: [item.type, item.amount, item.date, actionButtons]
-        };
+        let cells = '';
+        switch (type) {
+            case 'pharmacy':
+                cells = `
+                    <td >${item.name}</td>
+                    <td>${item.balance} د.أ</td>
+                    <td>${item.date}</td>
+                    <td>${actionButtons}</td>
+                `;
+                break;
+            case 'customer':
+                cells = `
+                    <td>${item.name}</td>
+                    <td>${item.phone}</td>
+                    <td>${item.address || '-'}</td>
+                    <td>${actionButtons}</td>
+                `;
+                break;
+            case 'staff':
+                cells = `
+                    <td>${item.name}</td>
+                    <td>${item.position}</td>
+                    <td>${item.phone}</td>
+                    <td>${actionButtons}</td>
+                `;
+                break;
+        }
 
-        const cells = rowData[type] || [];
-        return `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+        return `<tr>${cells}</tr>`;
     }
 
     generateFormContent(type, action, itemId = null) {
-        const isEdit = action === 'edit' && itemId;
-        const item = isEdit ? this.currentData.get(type)?.find(i => i.id === itemId) : null;
+        const item = itemId ? this.currentData.get(type)?.find(i => i.id == itemId) : {};
+        const isEdit = action === 'edit';
 
-        const forms = {
-            pharmacy: `
-                <form onsubmit="crudSystem.handleFormSubmit(event, '${type}', '${action}', ${itemId})">
-                    <div class="form-group">
-                        <label>اسم الحساب</label>
-                        <input type="text" name="name" value="${item?.name || ''}" placeholder="أدخل اسم الحساب" required>
-                    </div>
-                    <div class="form-group">
-                        <label>الرصيد الافتتاحي</label>
-                        <input type="number" name="balance" value="${item?.balance?.replace(' د.أ', '') || ''}" placeholder="أدخل الرصيد" required>
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ الإنشاء</label>
-                        <input type="date" name="date" value="${item?.lastTransaction || ''}">
-                    </div>
-                    <div class="dialog-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i><span>حفظ</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                            <i class="fas fa-times"></i><span>إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            `,
-            customer: `
-                <form onsubmit="crudSystem.handleFormSubmit(event, '${type}', '${action}', ${itemId})">
+        let formFields = '';
+        switch (type) {
+            case 'pharmacy':
+                formFields = `
                     <div class="form-row">
                         <div class="form-group">
-                            <label>اسم العميل</label>
-                            <input type="text" name="name" value="${item?.name || ''}" placeholder="أدخل اسم العميل" required>
+                            <label for="pharmacy-name">اسم الحساب <span class="required">*</span></label>
+                            <input type="text" id="pharmacy-name" name="name" value="${item.name || ''}" 
+                                   placeholder="أدخل اسم الحساب" required autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label>رقم الهاتف</label>
-                            <input type="tel" name="phone" value="${item?.phone || ''}" placeholder="أدخل رقم الهاتف" required>
+                            <label for="pharmacy-balance">الرصيد <span class="required">*</span></label>
+                            <input type="number" id="pharmacy-balance" name="balance" value="${item.balance || ''}" 
+                                   placeholder="أدخل الرصيد" required step="0.01" min="0" autocomplete="off">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>العنوان</label>
-                        <input type="text" name="address" value="${item?.address || ''}" placeholder="أدخل العنوان">
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ آخر زيارة</label>
-                        <input type="date" name="lastVisit" value="${item?.lastVisit || ''}">
-                    </div>
-                    <div class="dialog-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i><span>حفظ</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                            <i class="fas fa-times"></i><span>إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            `,
-            staff: `
-                <form onsubmit="crudSystem.handleFormSubmit(event, '${type}', '${action}', ${itemId})">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>اسم الموظف</label>
-                            <input type="text" name="name" value="${item?.name || ''}" placeholder="أدخل اسم الموظف" required>
+                            <label for="pharmacy-date">التاريخ</label>
+                            <input type="date" id="pharmacy-date" name="date" value="${item.date || new Date().toISOString().split('T')[0]}" autocomplete="off">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'customer':
+                formFields = `
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-name">اسم العميل <span class="required">*</span></label>
+                            <input type="text" id="customer-name" name="name" value="${item.name || ''}" 
+                                   placeholder="أدخل اسم العميل" required autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label>الوظيفة</label>
-                            <select name="position" required>
-                                <option value="صيدلي" ${item?.position === 'صيدلي' ? 'selected' : ''}>صيدلي</option>
-                                <option value="ممرض" ${item?.position === 'ممرض' ? 'selected' : ''}>ممرض</option>
-                                <option value="مندوب توصيل" ${item?.position === 'مندوب توصيل' ? 'selected' : ''}>مندوب توصيل</option>
-                                <option value="موظف مبيعات" ${item?.position === 'موظف مبيعات' ? 'selected' : ''}>موظف مبيعات</option>
+                            <label for="customer-phone">رقم الهاتف <span class="required">*</span></label>
+                            <input type="tel" id="customer-phone" name="phone" value="${item.phone || ''}" 
+                                   placeholder="أدخل رقم الهاتف" required autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-address">العنوان</label>
+                            <input type="text" id="customer-address" name="address" value="${item.address || ''}" 
+                                   placeholder="أدخل العنوان" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-lastVisit">آخر زيارة</label>
+                            <input type="date" id="customer-lastVisit" name="lastVisit" value="${item.lastVisit || ''}" autocomplete="off">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'staff':
+                formFields = `
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staff-name">اسم الموظف <span class="required">*</span></label>
+                            <input type="text" id="staff-name" name="name" value="${item.name || ''}" 
+                                   placeholder="أدخل اسم الموظف" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="staff-position">المنصب <span class="required">*</span></label>
+                            <select id="staff-position" name="position" required autocomplete="off">
+                                <option value="">اختر المنصب</option>
+                                <option value="صيدلي" ${item.position === 'صيدلي' ? 'selected' : ''}>صيدلي</option>
+                                <option value="ممرض" ${item.position === 'ممرض' ? 'selected' : ''}>ممرض</option>
+                                <option value="ممرضة" ${item.position === 'ممرضة' ? 'selected' : ''}>ممرضة</option>
+                                <option value="مساعد" ${item.position === 'مساعد' ? 'selected' : ''}>مساعد</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>رقم الهاتف</label>
-                        <input type="tel" name="phone" value="${item?.phone || ''}" placeholder="أدخل رقم الهاتف" required>
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ التعيين</label>
-                        <input type="date" name="hireDate" value="${item?.hireDate || ''}">
-                    </div>
-                    <div class="dialog-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i><span>حفظ</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                            <i class="fas fa-times"></i><span>إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            `,
-            inventory: `
-                <form onsubmit="crudSystem.handleFormSubmit(event, '${type}', '${action}', ${itemId})">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>اسم الدواء</label>
-                            <input type="text" name="name" value="${item?.name || ''}" placeholder="أدخل اسم الدواء" required>
+                            <label for="staff-phone">رقم الهاتف <span class="required">*</span></label>
+                            <input type="tel" id="staff-phone" name="phone" value="${item.phone || ''}" 
+                                   placeholder="أدخل رقم الهاتف" required autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label>الكمية</label>
-                            <input type="number" name="quantity" value="${item?.quantity || ''}" placeholder="أدخل الكمية" required>
+                            <label for="staff-hireDate">تاريخ التعيين</label>
+                            <input type="date" id="staff-hireDate" name="hireDate" value="${item.hireDate || ''}" autocomplete="off">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>تاريخ الصلاحية</label>
-                        <input type="date" name="expiryDate" value="${item?.expiryDate || ''}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم المورد</label>
-                        <input type="text" name="supplier" value="${item?.supplier || ''}" placeholder="أدخل اسم المورد">
-                    </div>
-                    <div class="dialog-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i><span>حفظ</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                            <i class="fas fa-times"></i><span>إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            `,
-            expense: `
-                <form onsubmit="crudSystem.handleFormSubmit(event, '${type}', '${action}', ${itemId})">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>نوع المصروف</label>
-                            <select name="type" required>
-                                <option value="إيجار" ${item?.type === 'إيجار' ? 'selected' : ''}>إيجار</option>
-                                <option value="رواتب" ${item?.type === 'رواتب' ? 'selected' : ''}>رواتب</option>
-                                <option value="فواتير خدمات" ${item?.type === 'فواتير خدمات' ? 'selected' : ''}>فواتير خدمات</option>
-                                <option value="مشتريات" ${item?.type === 'مشتريات' ? 'selected' : ''}>مشتريات</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>المبلغ</label>
-                            <input type="number" name="amount" value="${item?.amount?.replace(' د.أ', '') || ''}" placeholder="أدخل المبلغ" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>التاريخ</label>
-                        <input type="date" name="date" value="${item?.date || ''}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>الوصف</label>
-                        <textarea name="description" placeholder="أدخل وصف المصروف">${item?.description || ''}</textarea>
-                    </div>
-                    <div class="dialog-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i><span>حفظ</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                            <i class="fas fa-times"></i><span>إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            `
-        };
+                `;
+                break;
+        }
 
-        return forms[type] || '<p>نموذج غير متاح</p>';
+        return `
+            <div class="crud-form-container">
+                <form class="crud-form" data-action="${action}" data-type="${type}" data-item-id="${itemId || ''}" novalidate>
+                    ${formFields}
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <span>${isEdit ? 'تحديث' : 'حفظ'}</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary modal-close">
+                            <i class="fas fa-times"></i>
+                            <span>إلغاء</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
     }
 
     generateDeleteContent(type, itemId) {
-        const item = this.currentData.get(type)?.find(i => i.id === itemId);
-        const itemName = item?.name || item?.type || 'العنصر';
-        
+        const item = this.currentData.get(type)?.find(i => i.id == itemId);
+        const itemName = item?.name || 'العنصر';
+
         return `
-            <div class="text-center">
-                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--warning-color); margin-bottom: 20px;"></i>
-                <p style="font-size: 18px; margin-bottom: 30px;">هل أنت متأكد من حذف "${itemName}"؟</p>
-                <p style="color: var(--text-light); margin-bottom: 30px;">لا يمكن التراجع عن هذا الإجراء</p>
-                <div class="dialog-buttons">
-                    <button class="btn btn-danger" onclick="crudSystem.handleDelete('${type}', ${itemId})">
-                        <i class="fas fa-trash"></i><span>حذف</span>
+            <div class="delete-confirmation">
+                <div class="delete-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h4>تأكيد الحذف</h4>
+                <p class="delete-message">هل أنت متأكد من حذف <strong>"${itemName}"</strong>؟</p>
+                <p class="delete-warning">لا يمكن التراجع عن هذا الإجراء.</p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" data-crud="confirm-delete" data-type="${type}" data-item-id="${itemId}">
+                        <i class="fas fa-trash"></i>
+                        <span>حذف</span>
                     </button>
-                    <button class="btn btn-secondary" onclick="modalSystem.closeModal('crudModal')">
-                        <i class="fas fa-times"></i><span>إلغاء</span>
+                    <button type="button" class="btn btn-secondary modal-close">
+                        <i class="fas fa-times"></i>
+                        <span>إلغاء</span>
                     </button>
                 </div>
             </div>
         `;
     }
 
-    generateReportsContent() {
-        return `
-            <div class="reports-container">
-                <div class="report-filters" style="margin-bottom: 20px; padding: 20px; background: var(--bg-light); border-radius: var(--border-radius);">
-                    <h4 style="margin-bottom: 15px; color: var(--primary-color);">فلاتر التقارير</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>نوع التقرير</label>
-                            <select id="reportType">
-                                <option value="sales">تقرير المبيعات</option>
-                                <option value="inventory">تقرير المخزون</option>
-                                <option value="expenses">تقرير المصاريف</option>
-                                <option value="staff">تقرير الموظفين</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>من تاريخ</label>
-                            <input type="date" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label>إلى تاريخ</label>
-                            <input type="date" id="endDate">
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="crudSystem.generateReport()">
-                        <i class="fas fa-chart-bar"></i><span>إنشاء التقرير</span>
-                    </button>
-                </div>
-                <div id="reportResults">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>نوع التقرير</th>
-                                <th>التاريخ</th>
-                                <th>الحالة</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>تقرير المبيعات الشهري</td>
-                                <td>2025-09-10</td>
-                                <td><span style="color: var(--secondary-color);">جاهز</span></td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-view btn-crud" onclick="crudSystem.viewReport('sales')">
-                                        <i class="fas fa-eye"></i><span>عرض</span>
-                                    </button>
-                                    <button class="btn btn-primary btn-crud" onclick="crudSystem.exportReport('sales')">
-                                        <i class="fas fa-download"></i><span>تصدير</span>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>تقرير المخزون</td>
-                                <td>2025-09-10</td>
-                                <td><span style="color: var(--secondary-color);">جاهز</span></td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-view btn-crud" onclick="crudSystem.viewReport('inventory')">
-                                        <i class="fas fa-eye"></i><span>عرض</span>
-                                    </button>
-                                    <button class="btn btn-primary btn-crud" onclick="crudSystem.exportReport('inventory')">
-                                        <i class="fas fa-download"></i><span>تصدير</span>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-    }
-
-    handleFormSubmit(event, type, action, itemId) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
+    handleFormSubmit(e) {
+        console.log('handleFormSubmit called');
+        const form = e.target;
+        const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
-        // Generate unique ID for new items
-        if (action === 'add') {
-            const existingData = this.currentData.get(type) || [];
-            const maxId = existingData.length > 0 ? Math.max(...existingData.map(item => item.id)) : 0;
-            data.id = maxId + 1;
-        } else {
-            data.id = itemId;
-        }
+        const action = form.getAttribute('data-action');
+        const type = form.getAttribute('data-type');
+        const itemId = form.getAttribute('data-item-id');
 
-        // Format data based on type
-        if (type === 'pharmacy' || type === 'expense') {
-            if (data.balance) data.balance += ' د.أ';
-            if (data.amount) data.amount += ' د.أ';
-        }
+        console.log('Form data:', data);
+        console.log('Action:', action, 'Type:', type, 'ItemId:', itemId);
 
-        // Update data
-        let items = this.currentData.get(type) || [];
-        if (action === 'add') {
-            items.push(data);
-            this.showNotification('تم إضافة العنصر بنجاح', 'success');
-        } else if (action === 'edit') {
-            const index = items.findIndex(item => item.id === itemId);
-            if (index !== -1) {
-                items[index] = { ...items[index], ...data };
-                this.showNotification('تم تحديث العنصر بنجاح', 'success');
+        // Clear previous error states
+        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+        // Validate required fields
+        const requiredInputs = form.querySelectorAll('input[required], select[required]');
+        let hasErrors = false;
+
+        requiredInputs.forEach(input => {
+            const value = input.value.trim();
+            if (!value) {
+                input.classList.add('error');
+                hasErrors = true;
+                console.log('Required field empty:', input.name);
+            } else {
+                input.classList.remove('error');
             }
+        });
+
+        if (hasErrors) {
+            this.showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+            return;
         }
+
+        // Process data based on action
+        let items = this.currentData.get(type) || [];
         
-        this.currentData.set(type, items);
-        this.modalSystem.closeModal('crudModal');
-        
-        // Refresh the view if it's currently open
-        setTimeout(() => {
-            this.openCrudDialog('view', type);
-        }, 500);
+        try {
+            if (action === 'add') {
+                const maxId = items.length > 0 ? Math.max(...items.map(item => item.id)) : 0;
+                data.id = maxId + 1;
+                
+                // Convert numeric fields
+                if (data.balance) data.balance = parseFloat(data.balance);
+                
+                items.push(data);
+                this.currentData.set(type, items);
+                this.showNotification('تم إضافة العنصر بنجاح', 'success');
+                console.log('Item added successfully:', data);
+                
+            } else if (action === 'edit' && itemId) {
+                const index = items.findIndex(item => item.id == itemId);
+                if (index !== -1) {
+                    data.id = parseInt(itemId);
+                    if (data.balance) data.balance = parseFloat(data.balance);
+                    items[index] = { ...items[index], ...data };
+                    this.currentData.set(type, items);
+                    this.showNotification('تم تحديث العنصر بنجاح', 'success');
+                    console.log('Item updated successfully:', data);
+                } else {
+                    this.showNotification('العنصر غير موجود', 'error');
+                    return;
+                }
+            }
+
+            // Close modal and refresh view
+            this.modalSystem.closeModal('crudModal');
+            
+            setTimeout(() => {
+                this.handleCrudAction('view', type);
+            }, 500);
+            
+        } catch (error) {
+            console.error('Error saving data:', error);
+            this.showNotification('حدث خطأ أثناء الحفظ', 'error');
+        }
     }
 
     handleDelete(type, itemId) {
-        let items = this.currentData.get(type) || [];
-        const index = items.findIndex(item => item.id === itemId);
-        
-        if (index !== -1) {
-            items.splice(index, 1);
-            this.currentData.set(type, items);
-            this.showNotification('تم حذف العنصر بنجاح', 'success');
-            this.modalSystem.closeModal('crudModal');
+        console.log('handleDelete called:', type, itemId);
+        try {
+            let items = this.currentData.get(type) || [];
+            const index = items.findIndex(item => item.id == itemId);
             
-            // Refresh the view
-            setTimeout(() => {
-                this.openCrudDialog('view', type);
-            }, 500);
+            if (index !== -1) {
+                const deletedItem = items.splice(index, 1)[0];
+                this.currentData.set(type, items);
+                this.showNotification('تم حذف العنصر بنجاح', 'success');
+                console.log('Item deleted successfully:', deletedItem);
+                
+                this.modalSystem.closeModal('crudModal');
+                
+                setTimeout(() => {
+                    this.handleCrudAction('view', type);
+                }, 500);
+            } else {
+                this.showNotification('العنصر غير موجود', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            this.showNotification('حدث خطأ أثناء الحذف', 'error');
         }
-    }
-
-    generateReport() {
-        const reportType = document.getElementById('reportType')?.value;
-        const startDate = document.getElementById('startDate')?.value;
-        const endDate = document.getElementById('endDate')?.value;
-        
-        if (!reportType) {
-            this.showNotification('يرجى اختيار نوع التقرير', 'warning');
-            return;
-        }
-        
-        this.showNotification('جاري إنشاء التقرير...', 'info');
-        
-        // Simulate report generation
-        setTimeout(() => {
-            this.showNotification('تم إنشاء التقرير بنجاح', 'success');
-        }, 2000);
-    }
-
-    viewReport(reportType) {
-        this.showNotification(`عرض تقرير ${reportType}`, 'info');
-        // Here you would implement actual report viewing logic
-    }
-
-    exportReport(reportType) {
-        this.showNotification(`جاري تصدير تقرير ${reportType}...`, 'info');
-        
-        // Simulate export process
-        setTimeout(() => {
-            this.showNotification('تم تصدير التقرير بنجاح', 'success');
-            // Here you would implement actual export logic
-        }, 1500);
     }
 
     showNotification(message, type = 'info') {
-        // Create notification element if it doesn't exist
-        let notification = document.getElementById('notification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: var(--border-radius);
-                color: white;
-                font-weight: 600;
-                z-index: 10001;
-                transform: translateX(400px);
-                transition: var(--transition);
-                max-width: 350px;
-                box-shadow: var(--shadow-hover);
-            `;
-            document.body.appendChild(notification);
-        }
+        // Remove existing notification
+        const existing = document.getElementById('notification');
+        if (existing) existing.remove();
 
-        // Set notification style based on type
-        const colors = {
-            success: 'var(--secondary-color)',
-            error: 'var(--danger-color)',
-            warning: 'var(--warning-color)',
-            info: 'var(--primary-color)'
-        };
-
-        notification.style.backgroundColor = colors[type] || colors.info;
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.id = 'notification';
+        notification.className = `notification notification-${type}`;
         notification.textContent = message;
-        
-        // Show notification
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
 
-        // Hide notification after 3 seconds
+        document.body.appendChild(notification);
+
+        // Show notification
+        setTimeout(() => notification.classList.add('show'), 100);
+
+        // Hide notification
         setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
 }
 
-// Smooth Scrolling System
-class SmoothScroll {
-    constructor() {
-        this.init();
-    }
+// Initialize everything when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing systems...');
+    
+    try {
+        window.mobileNav = new MobileNavigation();
+        window.modalSystem = new ModalSystem();
+        window.crudSystem = new CrudSystem(window.modalSystem);
 
-    init() {
-        // Handle anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
+        // Add additional event delegation for confirm-delete buttons specifically
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('[data-crud="confirm-delete"]') || e.target.closest('[data-crud="confirm-delete"]')) {
                 e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
-                if (target) {
-                    this.scrollToElement(target);
-                }
-            });
-        });
-    }
-
-    scrollToElement(element, offset = 80) {
-        const elementPosition = element.offsetTop - offset;
-        window.scrollTo({
-            top: elementPosition,
-            behavior: 'smooth'
-        });
-    }
-}
-
-// Performance Optimization System
-class PerformanceOptimizer {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        // Lazy load images
-        this.setupLazyLoading();
-        
-        // Debounce resize events
-        this.setupResizeDebounce();
-        
-        // Preload critical resources
-        this.preloadResources();
-        
-        // Setup intersection observer for animations
-        this.setupAnimationObserver();
-    }
-
-    setupLazyLoading() {
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        observer.unobserve(img);
-                    }
-                });
-            });
-
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
-        }
-    }
-
-    setupResizeDebounce() {
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                // Trigger resize events
-                window.dispatchEvent(new CustomEvent('optimizedResize'));
-            }, 250);
-        });
-    }
-
-    preloadResources() {
-        // Preload critical CSS and JS
-        const criticalResources = [
-            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
-        ];
-
-        criticalResources.forEach(resource => {
-            const link = document.createElement('link');
-            link.rel = 'preload';
-            link.as = resource.endsWith('.css') ? 'style' : 'script';
-            link.href = resource;
-            document.head.appendChild(link);
-        });
-    }
-
-    setupAnimationObserver() {
-        if ('IntersectionObserver' in window) {
-            const animationObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate-in');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.animate-on-scroll').forEach(element => {
-                animationObserver.observe(element);
-            });
-        }
-    }
-}
-
-// Accessibility Enhancement System
-class AccessibilityEnhancer {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        this.setupKeyboardNavigation();
-        this.setupAriaLabels();
-        this.setupFocusManagement();
-        this.setupScreenReaderSupport();
-    }
-
-    setupKeyboardNavigation() {
-        // Enhanced keyboard navigation for modals
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                this.handleTabNavigation(e);
+                e.stopPropagation();
+                const button = e.target.closest('[data-crud="confirm-delete"]') || e.target;
+                const type = button.getAttribute('data-type');
+                const itemId = button.getAttribute('data-item-id');
+                console.log('Confirm delete clicked:', type, itemId);
+                window.crudSystem.handleDelete(type, itemId);
+                return;
             }
         });
-    }
 
-    handleTabNavigation(e) {
-        const modal = document.querySelector('.modal[style*="block"]');
-        if (modal) {
-            const focusableElements = modal.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-
-            if (e.shiftKey) {
-                if (document.activeElement === firstElement) {
-                    lastElement.focus();
-                    e.preventDefault();
-                }
-            } else {
-                if (document.activeElement === lastElement) {
-                    firstElement.focus();
-                    e.preventDefault();
-                }
-            }
+        // Add test buttons if they don't exist
+        if (!document.querySelector('[data-crud]')) {
+            const testContainer = document.createElement('div');
+            testContainer.style.cssText = 'padding: 20px; text-align: center;';
+            testContainer.innerHTML = `
+                <h2>نظام إدارة الصيدلية - عرض توضيحي</h2>
+                <div style="margin: 20px 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" data-crud="view" data-type="pharmacy">
+                        <i class="fas fa-eye"></i> عرض الحسابات
+                    </button>
+                    <button class="btn btn-primary" data-crud="view" data-type="customer">
+                        <i class="fas fa-users"></i> عرض العملاء
+                    </button>
+                    <button class="btn btn-primary" data-crud="view" data-type="staff">
+                        <i class="fas fa-user-tie"></i> عرض الموظفين
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(testContainer);
         }
-    }
 
-    setupAriaLabels() {
-        // Add aria labels to interactive elements
-        document.querySelectorAll('.mobile-menu-toggle').forEach(toggle => {
-            toggle.setAttribute('aria-label', 'فتح/إغلاق القائمة');
-            toggle.setAttribute('aria-expanded', 'false');
-        });
-
-        document.querySelectorAll('.flip-card').forEach(card => {
-            card.setAttribute('aria-label', 'اضغط للمزيد من المعلومات');
-        });
-    }
-
-    setupFocusManagement() {
-        // Manage focus for better accessibility
-        const originalFocus = { element: null };
-
-        // Store focus before opening modal
-        document.addEventListener('modalOpen', (e) => {
-            originalFocus.element = document.activeElement;
-            setTimeout(() => {
-                const firstInput = e.target.querySelector('input, button');
-                if (firstInput) firstInput.focus();
-            }, 100);
-        });
-
-        // Restore focus after closing modal
-        document.addEventListener('modalClose', () => {
-            if (originalFocus.element) {
-                originalFocus.element.focus();
-                originalFocus.element = null;
-            }
-        });
-    }
-
-    setupScreenReaderSupport() {
-        // Add screen reader support for dynamic content
-        const announcer = document.createElement('div');
-        announcer.setAttribute('aria-live', 'polite');
-        announcer.setAttribute('aria-atomic', 'true');
-        announcer.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;';
-        document.body.appendChild(announcer);
-
-        // Function to announce messages to screen readers
-        window.announceToScreenReader = (message) => {
-            announcer.textContent = message;
-            setTimeout(() => {
-                announcer.textContent = '';
-            }, 1000);
-        };
-    }
-}
-
-// Theme System
-class ThemeSystem {
-    constructor() {
-        this.currentTheme = localStorage.getItem('theme') || 'light';
-        this.init();
-    }
-
-    init() {
-        this.applyTheme(this.currentTheme);
-        this.setupThemeToggle();
-    }
-
-    setupThemeToggle() {
-        // Create theme toggle button
-        const themeToggle = document.createElement('button');
-        themeToggle.className = 'theme-toggle';
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        themeToggle.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            z-index: 1000;
-        `;
+        console.log('All systems initialized successfully');
         
-        themeToggle.addEventListener('click', () => this.toggleTheme());
-        document.body.appendChild(themeToggle);
+    } catch (error) {
+        console.error('Error initializing systems:', error);
     }
-
-    toggleTheme() {
-        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-        this.applyTheme(this.currentTheme);
-        localStorage.setItem('theme', this.currentTheme);
-    }
-
-    applyTheme(theme) {
-        if (theme === 'dark') {
-            document.documentElement.style.setProperty('--bg-light', '#1a1a1a');
-            document.documentElement.style.setProperty('--bg-white', '#2d2d2d');
-            document.documentElement.style.setProperty('--bg-dark', '#0d1117');
-            document.documentElement.style.setProperty('--text-dark', '#e6e6e6');
-            document.documentElement.style.setProperty('--text-light', '#b3b3b3');
-        } else {
-            document.documentElement.style.setProperty('--bg-light', '#f8f9fa');
-            document.documentElement.style.setProperty('--bg-white', '#ffffff');
-            document.documentElement.style.setProperty('--bg-dark', '#2c3e50');
-            document.documentElement.style.setProperty('--text-dark', '#333');
-            document.documentElement.style.setProperty('--text-light', '#666');
-        }
-    }
-}
-
-// Initialize all systems when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize core systems
-    window.mobileNav = new MobileNavigation();
-    window.modalSystem = new ModalSystem();
-    window.cardFlipSystem = new CardFlipSystem();
-    window.crudSystem = new CrudSystem(window.modalSystem);
-    window.smoothScroll = new SmoothScroll();
-    window.performanceOptimizer = new PerformanceOptimizer();
-    window.accessibilityEnhancer = new AccessibilityEnhancer();
-    window.themeSystem = new ThemeSystem();
-
-    // Global functions for backward compatibility
-    window.toggleCard = (element) => window.cardFlipSystem.toggleCard(element);
-    window.openModal = (modalId) => window.modalSystem.openModal(modalId);
-    window.closeModal = (modalId) => window.modalSystem.closeModal(modalId);
-    window.openCrudDialog = (action, type, itemId) => window.crudSystem.openCrudDialog(action, type, itemId);
-
-    // Setup error handling
-    window.addEventListener('error', (e) => {
-        console.error('JavaScript Error:', e.error);
-        if (window.crudSystem) {
-            window.crudSystem.showNotification('حدث خطأ في النظام', 'error');
-        }
-    });
-
-    // Setup performance monitoring
-    if ('performance' in window) {
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const perfData = performance.getEntriesByType('navigation')[0];
-                console.log(`Page Load Time: ${perfData.loadEventEnd - perfData.loadEventStart}ms`);
-            }, 0);
-        });
-    }
-
-    // Add loading animation removal
-    const loader = document.querySelector('.loader');
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.remove();
-            }, 500);
-        }, 1000);
-    }
-
-    // Initialize tooltips
-    document.querySelectorAll('[data-tooltip]').forEach(element => {
-        element.addEventListener('mouseenter', showTooltip);
-        element.addEventListener('mouseleave', hideTooltip);
-    });
-
-    console.log('🚀 Website JavaScript initialized successfully');
 });
 
-// Utility Functions
-function showTooltip(e) {
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
-    tooltip.textContent = e.target.getAttribute('data-tooltip');
-    tooltip.style.cssText = `
-        position: absolute;
-        background: var(--bg-dark);
-        color: var(--bg-white);
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        white-space: nowrap;
-        z-index: 10002;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s;
-    `;
-    
-    document.body.appendChild(tooltip);
-    
-    const rect = e.target.getBoundingClientRect();
-    tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
-    tooltip.style.left = rect.left + (rect.width - tooltip.offsetWidth) / 2 + 'px';
-    
-    setTimeout(() => tooltip.style.opacity = '1', 10);
+// Add the CSS styles
+const css = `
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 40px;
+    white-space: nowrap;
+    background: #007bff;
+    color: white;
 }
 
-function hideTooltip() {
-    const tooltip = document.querySelector('.tooltip');
-    if (tooltip) {
-        tooltip.style.opacity = '0';
-        setTimeout(() => tooltip.remove(), 300);
-    }
+.btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
 }
 
-// Add CSS for animations
-const animationCSS = `
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 32px;
 }
 
-.animate-in {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
+.btn-secondary {
+    background: #6c757d;
 }
 
-.lazy {
-    filter: blur(5px);
-    transition: filter 0.3s;
+.btn-secondary:hover {
+    background: #545b62;
 }
 
-.loader {
+.btn-danger {
+    background: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-edit {
+    background: #28a745;
+}
+
+.btn-edit:hover {
+    background: #1e7e34;
+}
+
+.btn-delete {
+    background: #dc3545;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--bg-white);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.modal-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 90vw;
+    max-height: 90vh;
+    margin: 20px auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    transform: translateY(-50px) scale(0.9);
+    transition: all 0.3s ease;
+}
+
+.modal.modal-active .modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.half-page-modal .modal-content {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    height: 70vh;
+    max-height: 70vh;
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+}
+
+.half-page-modal.modal-active .modal-content {
+    transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        width: 80vw;
+        max-width: 800px;
+        margin: 5% auto;
+        height: auto;
+        max-height: 80vh;
+    }
+    
+    .half-page-modal .modal-content {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        width: 80vw;
+        max-width: 800px;
+        height: 60vh;
+        max-height: 60vh;
+        margin: 5% auto;
+        border-radius: 12px;
+        transform: translateY(-50px) scale(0.9);
+    }
+    
+    .half-page-modal.modal-active .modal-content {
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 20px 24px 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    z-index: 10000;
+    flex-shrink: 0;
 }
 
-.loader::after {
-    content: '';
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--bg-light);
-    border-top: 5px solid var(--primary-color);
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.modal-close:hover {
+    background-color: #f5f5f5;
+}
+
+.modal-body {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.crud-form-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.crud-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 14px;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-group input.error,
+.form-group select.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.form-actions .btn {
+    min-width: 100px;
+    font-size: 14px;
+}
+
+.form-actions .btn span {
+    display: inline-block;
+    color: inherit;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .form-actions {
+        justify-content: center;
+    }
+    
+    .form-actions .btn {
+        flex: 1;
+        max-width: 120px;
+        font-size: 13px;
+    }
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 0;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px;
+    text-align: right;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color:#ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Action Buttons in Table */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .data-table {
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px 6px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+        min-width: 80px;
+    }
+}
+
+.view-actions {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.delete-confirmation {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.delete-icon {
+    font-size: 48px;
+    color: #ffc107;
+    margin-bottom: 20px;
+}
+
+.delete-confirmation h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.delete-message {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.delete-warning {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    max-width: 300px;
+    transform: translateX(350px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    background-color: #28a745;
+}
+
+.notification-error {
+    background-color: #dc3545;
+}
+
+.notification-info {
+    background-color: #007bff;
+}
+
+.notification-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+@media (max-width: 768px) {
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
+        top: 10px;
+    }
+    
+    .notification.show {
+        transform: translateY(0);
+    }
+}
+
+.modal-open {
+    overflow: hidden !important;
+}
+
+.keyboard-open .half-page-modal .modal-content {
+    height: 80vh !important;
+    max-height: 80vh !important;
+}
+
+.mobile-menu-toggle.active {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.main-nav.mobile-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* RTL Support */
+[dir="rtl"] .notification {
+    right: auto;
+    left: 20px;
+    transform: translateX(-350px);
+}
+
+[dir="rtl"] .notification.show {
+    transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+    [dir="rtl"] .notification {
+        left: 10px;
+        right: 10px;
+        transform: translateY(-100px);
+    }
+    
+    [dir="rtl"] .notification.show {
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .modal-header {
+        padding: 15px 20px 12px;
+    }
+    
+    .modal-header h3 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 15px 20px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+}
+
+.btn:focus,
+.form-group input:focus,
+.form-group select:focus,
+.modal-close:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Animation Performance */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
 }
 `;
 
-const style = document.createElement('style');
-style.textContent = animationCSS;
-document.head.appendChild(style);
-
+// Apply styles
+if (!document.getElementById('mobile-nav-styles')) {
+    const style = document.createElement('style');
+    style.id = 'mobile-nav-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+}
